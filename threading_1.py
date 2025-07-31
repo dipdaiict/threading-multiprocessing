@@ -53,3 +53,82 @@ thread2.join()
 # Measure total time taken
 end_time = time.perf_counter()
 print(f"\n[INFO] All tasks completed in {round(end_time - start_time, 4)} seconds.")
+
+# Threading Result Store:
+# Shared results # Shared dictionary to hold results
+results = {}
+
+def my_task(name, x):
+    time.sleep(2)
+    result = x * 2
+    results[name] = result  # Store result using thread name
+
+# Create threads with custom names
+t1 = threading.Thread(target=my_task, args=("Thread-1", 10), name="Thread-1")
+t2 = threading.Thread(target=my_task, args=("Thread-2", 20), name="Thread-2")
+
+t1.start()
+t2.start()
+
+t1.join()
+t2.join()
+
+# Fetch result by thread name
+print("Result from Thread-1:", results["Thread-1"])
+print("Result from Thread-2:", results["Thread-2"])
+
+
+# Thread Termination:
+
+# Create a termination signal (shared between main and thread)
+stop_event = threading.Event()
+
+def long_running_task():
+    print("Thread started.")
+    while not stop_event.is_set():
+        print("Working...")
+        time.sleep(1)
+    print("Thread received stop signal. Exiting...")
+
+# Start thread
+worker = threading.Thread(target=long_running_task)
+worker.start()
+
+# Let it run for 5 seconds
+time.sleep(5)
+
+# Signal the thread to stop
+print("Sending stop signal...")
+stop_event.set()
+
+# Wait for thread to exit
+worker.join()
+print("Thread terminated.")
+
+
+# Another Method: Using Flag
+# Shared flag
+should_stop = False
+
+def long_running_task():
+    global should_stop
+    print("Thread started.")
+    while not should_stop:
+        print("Working...")
+        time.sleep(1)
+    print("Thread received stop signal. Exiting...")
+
+# Start the thread
+worker = threading.Thread(target=long_running_task)
+worker.start()
+
+# Let it run for 5 seconds
+time.sleep(5)
+
+# Set the flag to stop the thread
+print("Sending stop signal...")
+should_stop = True
+
+# Wait for the thread to finish
+worker.join()
+print("Thread terminated.")
