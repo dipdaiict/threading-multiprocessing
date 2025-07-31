@@ -50,3 +50,15 @@ with concurrent.futures.ThreadPoolExecutor() as executor:
 
 end_time = time.perf_counter()
 print(f"\n[INFO] All tasks completed in {round(end_time - start_time, 4)} seconds.")
+
+# Define a simple task function
+def task(n):
+    print(f"Task {n} is running")
+    time.sleep(5)  # Simulate a 5-second workload
+
+# ThreadPoolExecutor with max_workers=4 means:
+# Only 4 tasks will run in parallel at any given time.
+with concurrent.futures.ThreadPoolExecutor(max_workers=4) as executor:
+    # Submitting 10 tasks; only 4 will run concurrently.
+    for i in range(10):
+        executor.submit(task, i)
